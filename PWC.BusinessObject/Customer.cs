@@ -693,12 +693,10 @@ namespace PWC.BusinessObject
         private List<ForecastExport> WriteForecast(Forecast forecast, SqlInt32 currentMonthActualSales)
         {
             var calendar = Calendar.GetInstance();
-            var companyCode = CompanyCode == "002" ? "001" : CompanyCode;
 
-            string forecastNamePreffix;
-            if (CompanyCode == "001") forecastNamePreffix = "DOM";
-            else if (CompanyCode == "002") forecastNamePreffix = "EXP";
-            else forecastNamePreffix = "BAS";
+            var companyCode = CompanyCode == "002" || CompanyCode == "301" ? "001" : CompanyCode;
+
+            var forecastNamePreffix = CompanyCode == "001" ? "DOM" : CompanyCode == "002" ? "EXP" : "BAS";
 
             var customerNumber = _distinctForecastNameFlag ? CustomerNumber.Value : "ZZZZ";
             if (CompanyCode == "002" && CustomerNumber.Value == "90077") customerNumber = "ARCM";
