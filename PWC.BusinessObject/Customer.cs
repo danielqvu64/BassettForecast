@@ -699,8 +699,14 @@ namespace PWC.BusinessObject
             var forecastNamePreffix = CompanyCode == "001" ? "DOM" : CompanyCode == "002" ? "EXP" : "BAS";
 
             var customerNumber = _distinctForecastNameFlag ? CustomerNumber.Value : "ZZZZ";
-            if (CompanyCode == "002" && CustomerNumber.Value == "90077") customerNumber = "ARCM";
-            if (CompanyCode == "002" && CustomerNumber.Value == "90281") customerNumber = "DROG";
+            if (CompanyCode == "001" && customerNumber == "91055") customerNumber = "TOPC";
+            if (CompanyCode == "001" && customerNumber == "1854") customerNumber = "AMAZ";
+            if (CompanyCode == "002" && customerNumber == "90077") customerNumber = "ARCM";
+            if (CompanyCode == "002" && customerNumber == "90281") customerNumber = "DROG";
+            if (CompanyCode == "002" && customerNumber == "15285") customerNumber = "SINX";
+            if (CompanyCode == "002" && customerNumber == "90947") customerNumber = "SIMC";
+            if (CompanyCode == "002" && customerNumber == "1641") customerNumber = "REPL";
+            if (CompanyCode == "002" && customerNumber == "90946") customerNumber = "SIGN";
 
             var forecastExports = new List<ForecastExport>();
 
