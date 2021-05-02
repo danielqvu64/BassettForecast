@@ -12,7 +12,6 @@ using PWC.PersistenceInterface;
 
 namespace PWC.BusinessObject
 {
-#if TEMPGROUPING
     public class ForecastExport
     {
         public SqlString CompanyCode;
@@ -23,7 +22,6 @@ namespace PWC.BusinessObject
         public SqlString Month;
         public SqlInt32 Quantity;
     }
-#endif
 
     public enum ForecastSalesRateAction
     { Get, Generate }
@@ -592,84 +590,13 @@ namespace PWC.BusinessObject
             if (!forecast.NY12.IsNull) sw.WriteLine("{0},{1}{2}{3},{4},{5},{6}", companyCode, forecastNamePreffix, customerNumber, forecast.ForecastMethod, forecast.ItemNumber, calendar.GetMMdash01dashYY("NY12", forecast.CreatedDate.Value), forecast.NY12);
         }
 
-        internal void ExportForecast(ForecastExportType forecastExportType, StreamWriter sw, bool subtractCurrentMonthSales)
+        internal void ExportForecastToText(StreamWriter swForecast, StreamWriter swForecastComment)
         {
-            var forecastCreatedDate = ForecastCollection[0].CreatedDate.Value;
-            if (forecastExportType == ForecastExportType.PipelineCrosstab)
-            {
-                // write customer header
-                var calendar = Calendar.GetInstance();
-                var companyCode = CompanyCode == "002" ? "001" : CompanyCode.Value;
-                var forecastNamePreffix = CompanyCode == "001" ? "DOM" : "EXP";
-                sw.WriteLine("{0}-{1}-{2}", companyCode, forecastNamePreffix, CustomerNumber);
-                sw.WriteLine();
-                var header = new StringBuilder();
-                header.Append("Item#,Method");
-                header.Append(",").Append(calendar.GetMMMYYYY("PY01", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY02", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY03", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY04", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY05", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY06", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY07", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY08", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY09", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY10", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY11", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("PY12", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY01", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY02", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY03", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY04", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY05", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY06", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY07", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY08", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY09", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY10", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY11", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("CY12", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY01", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY02", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY03", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY04", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY05", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY06", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY07", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY08", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY09", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY10", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY11", forecastCreatedDate));
-                header.Append(",").Append(calendar.GetMMMYYYY("NY12", forecastCreatedDate));
-                sw.WriteLine(header.ToString());
-                sw.WriteLine();
-            }
-            foreach (var forecast in ForecastCollection)
-            {
-                if (forecastExportType == ForecastExportType.PipelineCrosstab)
-                {
-                    if (forecast.ForecastMethod == "PL")
-                        WriteForecastPLCrossTab(sw, forecast);
-                }
-                else
-                {
-                    var actualSalesQuantity = SqlInt32.Zero;
-                    if (subtractCurrentMonthSales)
-                    {
-                        var actualSales = ActualSalesCollection[new ActualSalesKey(forecast.CompanyCode, forecast.CustomerNumber, forecast.ItemNumber, new SqlDateTime(DateTime.Today.Year, DateTime.Today.Month, 1))];
-                        if (actualSales != null && actualSales.Quantity > SqlInt32.Zero)
-                            actualSalesQuantity = actualSales.Quantity;
-                    }
-                    WriteForecast(sw, forecast, actualSalesQuantity);
-                }
-            }
+            WriteForecastToText(swForecast, swForecastComment);
             _forecastCollection = null; //release the memory for GC
-            if (forecastExportType == ForecastExportType.PipelineCrosstab)
-                sw.WriteLine();
         }
 
-#if TEMPGROUPING
-        internal List<ForecastExport> ExportForecast(bool subtractCurrentMonthSales)
+        internal List<ForecastExport> ExportForecastToOracle(bool subtractCurrentMonthSales)
         {
             var forecastExports = new List<ForecastExport>();
             foreach (var forecast in ForecastCollection)
@@ -677,10 +604,7 @@ namespace PWC.BusinessObject
                 var actualSalesQuantity = SqlInt32.Zero;
                 if (subtractCurrentMonthSales)
                 {
-                    var actualSales =
-                        ActualSalesCollection[
-                            new ActualSalesKey(forecast.CompanyCode, forecast.CustomerNumber, forecast.ItemNumber,
-                                               new SqlDateTime(DateTime.Today.Year, DateTime.Today.Month, 1))];
+                    var actualSales = ActualSalesCollection[new ActualSalesKey(forecast.CompanyCode, forecast.CustomerNumber, forecast.ItemNumber, new SqlDateTime(DateTime.Today.Year, DateTime.Today.Month, 1))];
                     if (actualSales != null && actualSales.Quantity > SqlInt32.Zero)
                         actualSalesQuantity = actualSales.Quantity;
                 }
@@ -751,7 +675,6 @@ namespace PWC.BusinessObject
 
             return forecastExports;
         }
-#endif
 
         public void ExportSalesRate(DateTime posWeekEndDateEnd, string filePath, bool appendFile)
         {
@@ -860,10 +783,62 @@ namespace PWC.BusinessObject
             }
         }
 
-        private static string GetForecastCommentTxtFileName(string fileName)
+        public static string GetForecastCommentTxtFileName(string fileName)
         {
             var dotPosistion = fileName.LastIndexOf('.');
             return string.Format("{0}_comment.{1}", fileName.Substring(0, dotPosistion), fileName.Substring(dotPosistion + 1));
+        }
+
+        public static void WriteForecastToTxtHeaders(StreamWriter swForecast, StreamWriter swForecastComment)
+        {
+            const string months = "\tPY01\tPY02\tPY03\tPY04\tPY05\tPY06\tPY07\tPY08\tPY09\tPY10\tPY11\tPY12";
+            var sb = new StringBuilder();
+            sb.Append("Company\tCustomer\tForecast Date\tItem #\tMethod")
+                .Append(months)
+                .Append(months.Replace('P', 'C'))
+                .Append(months.Replace('P', 'N'));
+            swForecast.WriteLine(sb.ToString());
+
+            swForecastComment.WriteLine("Company\tCustomer\tForecast Date\tItem #\tMethod\tMonth\tComment Time\tComment");
+        }
+
+        public void WriteForecastToText(StreamWriter swForecast, StreamWriter swForecastComment)
+        {
+            var forecastCommentCollection = new List<ForecastCommentAndOverride>();
+            StringBuilder sb;
+
+            foreach (var forecast in _forecastCollection)
+            {
+                sb = new StringBuilder();
+                sb.Append('!').Append(forecast.CompanyCode).Append('\t');
+                sb.Append(forecast.CustomerNumber).Append('\t');
+                sb.Append(forecast.POSSalesEndDate).Append('\t');
+                sb.Append(forecast.ItemNumber).Append('\t');
+                sb.Append(forecast.ForecastMethod).Append('\t');
+                if (forecast.HasComment)
+                    forecastCommentCollection.AddRange(forecast.ForecastCommentAndOverrideCollection.Where(c => !c.Comment.IsNull));
+
+                foreach (var qty in forecast.ForecastQuantityCollection)
+                    sb.Append(qty.IsNull ? "" : qty.ToString()).Append('\t');
+                sb.Remove(sb.Length - 1, 1);
+
+                swForecast.WriteLine(sb.ToString());
+            }
+
+            foreach (var forecastComment in forecastCommentCollection)
+            {
+                sb = new StringBuilder();
+                sb.Append('!').Append(forecastComment.CompanyCode).Append('\t');
+                sb.Append(forecastComment.CustomerNumber).Append('\t');
+                sb.Append(forecastComment.POSSalesEndDate).Append('\t');
+                sb.Append(forecastComment.ItemNumber).Append('\t');
+                sb.Append(forecastComment.ForecastMethod).Append('\t');
+                sb.Append(forecastComment.ForecastValueKey).Append('\t');
+                sb.Append(forecastComment.CommentOverrideDateTime).Append('\t');
+                sb.Append(forecastComment.Comment.Value.Replace(Environment.NewLine, "{crlf}"));
+
+                swForecastComment.WriteLine(sb.ToString());
+            }
         }
 
         public void WriteForecastToTxt(string fileName)

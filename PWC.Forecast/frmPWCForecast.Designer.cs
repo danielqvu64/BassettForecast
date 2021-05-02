@@ -75,6 +75,8 @@ namespace PWC.Forecast
             this.reportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actualVsForecastComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageForecast = new System.Windows.Forms.TabPage();
+            this.btnExportForecast = new System.Windows.Forms.Button();
+            this.btnImportForecast = new System.Windows.Forms.Button();
             this.lblSavedForecast = new System.Windows.Forms.Label();
             this.cboSavedForecast = new System.Windows.Forms.ComboBox();
             this.bindingSourceSavedForecast = new System.Windows.Forms.BindingSource(this.components);
@@ -315,8 +317,8 @@ namespace PWC.Forecast
             this.chkUseClipboardDataOnNewRow = new System.Windows.Forms.CheckBox();
             this.lblForecastFutureFrozenMonths = new System.Windows.Forms.Label();
             this.txtForecastFutureFrozenMonths = new System.Windows.Forms.TextBox();
-            this.btnExportForecast = new System.Windows.Forms.Button();
-            this.btnImportForecast = new System.Windows.Forms.Button();
+            this.forecastFromEditedForecastFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forecastFromEditedForecastFileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripPWCForecast.SuspendLayout();
             this.tabPageForecast.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceSavedForecast)).BeginInit();
@@ -439,9 +441,11 @@ namespace PWC.Forecast
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.forecastFromEditedForecastFileToolStripMenuItem1,
             this.posFromOracleFlatFileToolStripMenuItem,
             this.posFromACNeilsenFlatFileToolStripMenuItem,
             this.posFromACNeilsenXLSFileToolStripMenuItem,
+            this.forecastFromEditedForecastFileToolStripMenuItem,
             this.posFromACNeilsenXLSToCSVFileToolStripMenuItem,
             this.actualSalesFromFlatFileToolStripMenuItem,
             this.trendByCompanyProductGroupToolStripMenuItem,
@@ -456,63 +460,63 @@ namespace PWC.Forecast
             // posFromOracleFlatFileToolStripMenuItem
             // 
             this.posFromOracleFlatFileToolStripMenuItem.Name = "posFromOracleFlatFileToolStripMenuItem";
-            this.posFromOracleFlatFileToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.posFromOracleFlatFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.posFromOracleFlatFileToolStripMenuItem.Text = "POS from Oracle flat file";
             this.posFromOracleFlatFileToolStripMenuItem.Click += new System.EventHandler(this.posFromOracleFlatFileToolStripMenuItem_Click);
             // 
             // posFromACNeilsenFlatFileToolStripMenuItem
             // 
             this.posFromACNeilsenFlatFileToolStripMenuItem.Name = "posFromACNeilsenFlatFileToolStripMenuItem";
-            this.posFromACNeilsenFlatFileToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.posFromACNeilsenFlatFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.posFromACNeilsenFlatFileToolStripMenuItem.Text = "POS from AC Neilsen flat file";
             this.posFromACNeilsenFlatFileToolStripMenuItem.Click += new System.EventHandler(this.posFromACNeilsenFlatFileToolStripMenuItem_Click);
             // 
             // posFromACNeilsenXLSFileToolStripMenuItem
             // 
             this.posFromACNeilsenXLSFileToolStripMenuItem.Name = "posFromACNeilsenXLSFileToolStripMenuItem";
-            this.posFromACNeilsenXLSFileToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.posFromACNeilsenXLSFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.posFromACNeilsenXLSFileToolStripMenuItem.Text = "POS from AC Neilsen XLS file";
             this.posFromACNeilsenXLSFileToolStripMenuItem.Click += new System.EventHandler(this.posFromACNeilsenXLSFileToolStripMenuItem_Click);
             // 
             // posFromACNeilsenXLSToCSVFileToolStripMenuItem
             // 
             this.posFromACNeilsenXLSToCSVFileToolStripMenuItem.Name = "posFromACNeilsenXLSToCSVFileToolStripMenuItem";
-            this.posFromACNeilsenXLSToCSVFileToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.posFromACNeilsenXLSToCSVFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.posFromACNeilsenXLSToCSVFileToolStripMenuItem.Text = "POS from AC Neilsen CSV file";
             this.posFromACNeilsenXLSToCSVFileToolStripMenuItem.Click += new System.EventHandler(this.posFromACNeilsenXLSToCSVFileToolStripMenuItem_Click);
             // 
             // actualSalesFromFlatFileToolStripMenuItem
             // 
             this.actualSalesFromFlatFileToolStripMenuItem.Name = "actualSalesFromFlatFileToolStripMenuItem";
-            this.actualSalesFromFlatFileToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.actualSalesFromFlatFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.actualSalesFromFlatFileToolStripMenuItem.Text = "Actual Sales from flat file";
             this.actualSalesFromFlatFileToolStripMenuItem.Click += new System.EventHandler(this.actualSalesFromFlatFileToolStripMenuItem_Click);
             // 
             // trendByCompanyProductGroupToolStripMenuItem
             // 
             this.trendByCompanyProductGroupToolStripMenuItem.Name = "trendByCompanyProductGroupToolStripMenuItem";
-            this.trendByCompanyProductGroupToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.trendByCompanyProductGroupToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.trendByCompanyProductGroupToolStripMenuItem.Text = "Trend by Company Product Group";
             this.trendByCompanyProductGroupToolStripMenuItem.Click += new System.EventHandler(this.trendByCompanyProductGroupToolStripMenuItem_Click);
             // 
             // trendByCompanyItemToolStripMenuItem
             // 
             this.trendByCompanyItemToolStripMenuItem.Name = "trendByCompanyItemToolStripMenuItem";
-            this.trendByCompanyItemToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.trendByCompanyItemToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.trendByCompanyItemToolStripMenuItem.Text = "Trend by Company Item";
             this.trendByCompanyItemToolStripMenuItem.Click += new System.EventHandler(this.trendByCompanyItemToolStripMenuItem_Click);
             // 
             // trendByCustomerProductGroupToolStripMenuItem
             // 
             this.trendByCustomerProductGroupToolStripMenuItem.Name = "trendByCustomerProductGroupToolStripMenuItem";
-            this.trendByCustomerProductGroupToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.trendByCustomerProductGroupToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.trendByCustomerProductGroupToolStripMenuItem.Text = "Trend by Customer Product Group";
             this.trendByCustomerProductGroupToolStripMenuItem.Click += new System.EventHandler(this.trendByCustomerProductGroupToolStripMenuItem_Click);
             // 
             // trendByCustomerItemToolStripMenuItem
             // 
             this.trendByCustomerItemToolStripMenuItem.Name = "trendByCustomerItemToolStripMenuItem";
-            this.trendByCustomerItemToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.trendByCustomerItemToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.trendByCustomerItemToolStripMenuItem.Text = "Trend by Customer Item";
             this.trendByCustomerItemToolStripMenuItem.Click += new System.EventHandler(this.trendByCustomerItemToolStripMenuItem_Click);
             // 
@@ -526,48 +530,48 @@ namespace PWC.Forecast
             this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem,
             this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem});
             this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
-            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.restoreToolStripMenuItem.Text = "Restore";
             // 
             // restorePOSPriorToImportToolStripMenuItem
             // 
             this.restorePOSPriorToImportToolStripMenuItem.Name = "restorePOSPriorToImportToolStripMenuItem";
-            this.restorePOSPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(338, 22);
+            this.restorePOSPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.restorePOSPriorToImportToolStripMenuItem.Text = "POS prior to import";
             this.restorePOSPriorToImportToolStripMenuItem.Click += new System.EventHandler(this.restorePOSPriorToImportToolStripMenuItem_Click);
             // 
             // restoreActualSalesPriorToImportToolStripMenuItem
             // 
             this.restoreActualSalesPriorToImportToolStripMenuItem.Name = "restoreActualSalesPriorToImportToolStripMenuItem";
-            this.restoreActualSalesPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(338, 22);
+            this.restoreActualSalesPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.restoreActualSalesPriorToImportToolStripMenuItem.Text = "Actual Sales prior to import";
             this.restoreActualSalesPriorToImportToolStripMenuItem.Click += new System.EventHandler(this.restoreActualSalesPriorToImportToolStripMenuItem_Click);
             // 
             // restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem
             // 
             this.restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem.Name = "restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem";
-            this.restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(338, 22);
+            this.restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem.Text = "Trend by Company Product Group prior to import";
             this.restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem.Click += new System.EventHandler(this.restoreTrendByCompanyProductGroupPriorToImportToolStripMenuItem_Click);
             // 
             // restoreTrendByCompanyItemPriorToImportToolStripMenuItem
             // 
             this.restoreTrendByCompanyItemPriorToImportToolStripMenuItem.Name = "restoreTrendByCompanyItemPriorToImportToolStripMenuItem";
-            this.restoreTrendByCompanyItemPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(338, 22);
+            this.restoreTrendByCompanyItemPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.restoreTrendByCompanyItemPriorToImportToolStripMenuItem.Text = "Trend by Company Item prior to import";
             this.restoreTrendByCompanyItemPriorToImportToolStripMenuItem.Click += new System.EventHandler(this.restoreTrendByCompanyItemPriorToImportToolStripMenuItem_Click);
             // 
             // restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem
             // 
             this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem.Name = "restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem";
-            this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(338, 22);
+            this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem.Text = "Trend by Customer Product Group prior to import";
             this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem.Click += new System.EventHandler(this.restoreTrendByCustomerProductGroupPriorToImportToolStripMenuItem_Click);
             // 
             // restoreTrendByCustomerItemPriorToImportToolStripMenuItem
             // 
             this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem.Name = "restoreTrendByCustomerItemPriorToImportToolStripMenuItem";
-            this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(338, 22);
+            this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem.Text = "Trend by Customer Item prior to import";
             this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem.Click += new System.EventHandler(this.restoreTrendByCustomerItemPriorToImportToolStripMenuItem_Click);
             // 
@@ -579,7 +583,7 @@ namespace PWC.Forecast
             this.bonusItemsToolStripMenuItem,
             this.discontinuedItemsToolStripMenuItem});
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.exportToolStripMenuItem.Text = "Export";
             // 
             // salesRateToolStripMenuItem
@@ -704,6 +708,26 @@ namespace PWC.Forecast
             this.tabPageForecast.TabIndex = 2;
             this.tabPageForecast.Text = "Forecast";
             this.tabPageForecast.UseVisualStyleBackColor = true;
+            // 
+            // btnExportForecast
+            // 
+            this.btnExportForecast.Location = new System.Drawing.Point(221, 10);
+            this.btnExportForecast.Name = "btnExportForecast";
+            this.btnExportForecast.Size = new System.Drawing.Size(62, 23);
+            this.btnExportForecast.TabIndex = 37;
+            this.btnExportForecast.Text = "Export";
+            this.btnExportForecast.UseVisualStyleBackColor = true;
+            this.btnExportForecast.Click += new System.EventHandler(this.btnExportForecast_Click);
+            // 
+            // btnImportForecast
+            // 
+            this.btnImportForecast.Location = new System.Drawing.Point(153, 9);
+            this.btnImportForecast.Name = "btnImportForecast";
+            this.btnImportForecast.Size = new System.Drawing.Size(62, 23);
+            this.btnImportForecast.TabIndex = 36;
+            this.btnImportForecast.Text = "Import";
+            this.btnImportForecast.UseVisualStyleBackColor = true;
+            this.btnImportForecast.Click += new System.EventHandler(this.btnImportForecast_Click);
             // 
             // lblSavedForecast
             // 
@@ -3192,25 +3216,18 @@ namespace PWC.Forecast
             this.txtForecastFutureFrozenMonths.TabIndex = 106;
             this.txtForecastFutureFrozenMonths.TabStop = false;
             // 
-            // btnExportForecast
+            // forecastFromEditedForecastFileToolStripMenuItem
             // 
-            this.btnExportForecast.Location = new System.Drawing.Point(221, 10);
-            this.btnExportForecast.Name = "btnExportForecast";
-            this.btnExportForecast.Size = new System.Drawing.Size(62, 23);
-            this.btnExportForecast.TabIndex = 37;
-            this.btnExportForecast.Text = "Export";
-            this.btnExportForecast.UseVisualStyleBackColor = true;
-            this.btnExportForecast.Click += new System.EventHandler(this.btnExportForecast_Click);
+            this.forecastFromEditedForecastFileToolStripMenuItem.Name = "forecastFromEditedForecastFileToolStripMenuItem";
+            this.forecastFromEditedForecastFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.forecastFromEditedForecastFileToolStripMenuItem.Text = "Forecast from edited forecast file";
             // 
-            // btnImportForecast
+            // forecastFromEditedForecastFileToolStripMenuItem1
             // 
-            this.btnImportForecast.Location = new System.Drawing.Point(153, 9);
-            this.btnImportForecast.Name = "btnImportForecast";
-            this.btnImportForecast.Size = new System.Drawing.Size(62, 23);
-            this.btnImportForecast.TabIndex = 36;
-            this.btnImportForecast.Text = "Import";
-            this.btnImportForecast.UseVisualStyleBackColor = true;
-            this.btnImportForecast.Click += new System.EventHandler(this.btnImportForecast_Click);
+            this.forecastFromEditedForecastFileToolStripMenuItem1.Name = "forecastFromEditedForecastFileToolStripMenuItem1";
+            this.forecastFromEditedForecastFileToolStripMenuItem1.Size = new System.Drawing.Size(255, 22);
+            this.forecastFromEditedForecastFileToolStripMenuItem1.Text = "Forecast from edited forecast file";
+            this.forecastFromEditedForecastFileToolStripMenuItem1.Click += new System.EventHandler(this.forecastFromEditedForecastFileToolStripMenuItem1_Click);
             // 
             // frmPWCForecast
             // 
@@ -3573,6 +3590,8 @@ namespace PWC.Forecast
         private System.Windows.Forms.DataGridViewCheckBoxColumn isReadOnlyDataGridViewCheckBoxColumn4;
         private Button btnExportForecast;
         private Button btnImportForecast;
+        private ToolStripMenuItem forecastFromEditedForecastFileToolStripMenuItem1;
+        private ToolStripMenuItem forecastFromEditedForecastFileToolStripMenuItem;
     }
 }
 

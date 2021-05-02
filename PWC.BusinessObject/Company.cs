@@ -14,7 +14,7 @@ namespace PWC.BusinessObject
     { Bonus, Discontinued }
 
     public enum ForecastExportType
-    { ToOracle, PipelineCrosstab }
+    { ToOracle, ForEdit }
 
     public enum ForecastReportGroupBy
     { Brand, Item }
@@ -236,86 +236,13 @@ namespace PWC.BusinessObject
             sw.WriteLine();
         }
 
-        public void ExportForecast(DateTime posSalesEndDate, string filePath, bool appendFile, ForecastExportType forecastExportType, bool subtractCurrentMonthSales)
-        {
-            using (var sw = new StreamWriter(filePath, appendFile))
-            {
-                foreach (var customer in CustomerCollection)
-                {
-                    customer.POSSalesEndDate = posSalesEndDate;
-                    customer.ForecastAction = ForecastAction.Get;
-                    customer.ForecastCollection = null;
-                    if (customer.ForecastCollection != null)
-                    {
-                        if (customer.ForecastCollection.Count == 0)
-                            continue;
-                        if (forecastExportType == ForecastExportType.PipelineCrosstab &&
-                            !customer.ForecastCollection.ContainForecastMethod("PL"))
-                            continue;
-                    }
-                    customer.ExportForecast(forecastExportType, sw, subtractCurrentMonthSales);
-                }
-            }
-        }
-
-        public void ExportForecast(string filePath, bool appendFile, ForecastExportType forecastExportType, bool subtractCurrentMonthSales)
-        {
-            using (var sw = new StreamWriter(filePath, appendFile))
-            {
-                foreach (var customer in CustomerCollection)
-                {
-                    var savedForecastDates = PersistenceLayer.Utility.GetInstance().GetSavedForecastDateCollection(_companyCode, customer.CustomerNumber, 1);
-                    if (savedForecastDates.Count == 1)
-                        continue;
-                    var posSalesEndDate = DateTime.Parse(savedForecastDates[1].POSSalesEndDate);
-                    customer.POSSalesEndDate = posSalesEndDate;
-                    customer.ForecastAction = ForecastAction.Get;
-                    customer.ForecastCollection = null;
-                    if (customer.ForecastCollection != null)
-                    {
-                        if (customer.ForecastCollection.Count == 0)
-                            continue;
-                        if (forecastExportType == ForecastExportType.PipelineCrosstab &&
-                            !customer.ForecastCollection.ContainForecastMethod("PL"))
-                            continue;
-                    }
-                    customer.ExportForecast(forecastExportType, sw, subtractCurrentMonthSales);
-                }
-            }
-        }
-
-#if TEMPGROUPING
-        public void ExportForecast(DateTime posSalesEndDate, string filePath, bool appendFile, bool subtractCurrentMonthSales)
-        {
-            var forecastExports = new List<ForecastExport>();
-            foreach (var customer in CustomerCollection)
-            {
-                customer.POSSalesEndDate = posSalesEndDate;
-                customer.ForecastAction = ForecastAction.Get;
-                customer.ForecastCollection = null;
-                if (customer.ForecastCollection != null && customer.ForecastCollection.Count == 0)
-                    continue;
-                forecastExports.AddRange(customer.ExportForecast(subtractCurrentMonthSales));
-            }
-            using (var sw = new StreamWriter(filePath, appendFile))
-            {
-                foreach (var item in from forecastExport in forecastExports
-                                     group forecastExport by new { forecastExport.CompanyCode, forecastExport.ForecastNamePrefix, forecastExport.CustomerNumber, forecastExport.ForecastMethod, forecastExport.ItemNumber, forecastExport.Month } into g
-                                     select new { g.Key.CompanyCode, g.Key.ForecastNamePrefix, g.Key.CustomerNumber, g.Key.ForecastMethod, g.Key.ItemNumber, g.Key.Month, Quantity = g.Sum(item => item.Quantity.Value) })
-                {
-                    sw.WriteLine("{0},{1}{2}{3},{4},{5},{6}", item.CompanyCode, item.ForecastNamePrefix, item.CustomerNumber, item.ForecastMethod, item.ItemNumber, item.Month, item.Quantity);
-                }
-            }
-        }
-
-        public void ExportForecast(string filePath, bool appendFile, bool subtractCurrentMonthSales)
+        public void ExportForecast(ForecastExportType forecastExportType, StreamWriter swForecast, StreamWriter swForecastComment, bool subtractCurrentMonthSales)
         {
             var forecastExports = new List<ForecastExport>();
             foreach (var customer in CustomerCollection)
             {
                 var savedForecastDates =
-                    PersistenceLayer.Utility.GetInstance()
-                                    .GetSavedForecastDateCollection(_companyCode, customer.CustomerNumber, 1);
+                    PersistenceLayer.Utility.GetInstance().GetSavedForecastDateCollection(_companyCode, customer.CustomerNumber, 1);
                 if (savedForecastDates.Count == 1)
                     continue;
                 var posSalesEndDate = DateTime.Parse(savedForecastDates[1].POSSalesEndDate);
@@ -324,18 +251,17 @@ namespace PWC.BusinessObject
                 customer.ForecastCollection = null;
                 if (customer.ForecastCollection != null && customer.ForecastCollection.Count == 0)
                     continue;
-                forecastExports.AddRange(customer.ExportForecast(subtractCurrentMonthSales));
+                if (forecastExportType == ForecastExportType.ToOracle)
+                    forecastExports.AddRange(customer.ExportForecastToOracle(subtractCurrentMonthSales));
+                else
+                    customer.ExportForecastToText(swForecast, swForecastComment);
             }
-            using (var sw = new StreamWriter(filePath, appendFile))
+            foreach (var item in from forecastExport in forecastExports group forecastExport by new { forecastExport.CompanyCode, forecastExport.ForecastNamePrefix, forecastExport.CustomerNumber, forecastExport.ForecastMethod, forecastExport.ItemNumber, forecastExport.Month } into g
+                                 select new { g.Key.CompanyCode, g.Key.ForecastNamePrefix, g.Key.CustomerNumber, g.Key.ForecastMethod, g.Key.ItemNumber, g.Key.Month, Quantity = g.Sum(item => item.Quantity.Value) })
             {
-                foreach (var item in from forecastExport in forecastExports group forecastExport by new { forecastExport.CompanyCode, forecastExport.ForecastNamePrefix, forecastExport.CustomerNumber, forecastExport.ForecastMethod, forecastExport.ItemNumber, forecastExport.Month } into g
-                            select new { g.Key.CompanyCode, g.Key.ForecastNamePrefix, g.Key.CustomerNumber, g.Key.ForecastMethod, g.Key.ItemNumber, g.Key.Month, Quantity = g.Sum(item => item.Quantity.Value) })
-                {
-                    sw.WriteLine("{0},{1}{2}{3},{4},{5},{6}", item.CompanyCode, item.ForecastNamePrefix, item.CustomerNumber, item.ForecastMethod, item.ItemNumber, item.Month, item.Quantity);
-                }
+                swForecast.WriteLine("{0},{1}{2}{3},{4},{5},{6}", item.CompanyCode, item.ForecastNamePrefix, item.CustomerNumber, item.ForecastMethod, item.ItemNumber, item.Month, item.Quantity);
             }
         }
-#endif
 
         public void ReportForecast(string filePath, bool appendFile, SqlString customerNumberFrom, SqlString customerNumberTo, SqlString brandCodeFrom, SqlString brandCodeTo, SqlString productCategoryCodeFrom, SqlString productCategoryCodeTo, ForecastReportGroupBy groupBy, string forecastMethods, int forecastYear)
         {

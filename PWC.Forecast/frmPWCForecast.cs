@@ -255,6 +255,21 @@ namespace PWC.Forecast
         #endregion
 
         #region Menus Event Handlers
+        private void forecastFromEditedForecastFileToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!Validate())
+                    return;
+                var frmImport = new frmImport(ImportFileType.ForecastFromEdited);
+                frmImport.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                Utility.GetInstance().HandleException(this, ex, e);
+            }
+        }
+
         private void posFromOracleFlatFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -1240,6 +1255,102 @@ namespace PWC.Forecast
             }
         }
 
+        private void btnSaveForecast_Click(object sender, EventArgs e)
+        {
+            Customer customer = null;
+            try
+            {
+                if (_company == null || _customerKey == null)
+                {
+                    MessageBox.Show("Please enter Company Code and Customer Number.", "Bassett Forecast");
+                    txtCompanyCode.Focus();
+                    return;
+                }
+                customer = _company.CustomerCollection[_customerKey];
+                if (customer.ForecastCollection.Count <= 0)
+                {
+                    MessageBox.Show("The Forecast collection is empty.", "Bassett Forecast");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Utility.GetInstance().HandleException(this, ex, e);
+                return;
+            }
+
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                using (var transaction = new Transaction())
+                {
+                    switch (customer.ForecastAction)
+                    {
+                        case ForecastAction.Get:
+                            transaction.Enlist(customer.ForecastCollection);
+                            customer.ForecastCollection.Save();
+
+                            transaction.Commit();
+                            break;
+                        case ForecastAction.Generate:
+                            {
+                                // save a copy of the genenerated collection
+                                var generatedCollection = customer.ForecastCollection;
+
+                                // delete the existing collections
+                                customer.ForecastAction = ForecastAction.Get; // do a get for delete
+                                customer.ForecastCollection.SetHeader = generatedCollection.SetHeader; // restore the version before the get
+
+                                foreach (var forecast in customer.ForecastCollection.Where(forecast => (bool)(forecast.HasComment || forecast.HasOverride)))
+                                {
+                                    transaction.Enlist(forecast.ForecastCommentAndOverrideCollection);
+                                    forecast.ForecastCommentAndOverrideCollection.Delete();
+                                }
+
+                                transaction.Enlist(customer.ForecastCollection);
+                                customer.ForecastCollection.Delete();
+
+                                // insert the generated collection to DB
+                                generatedCollection.MarkNew();
+                                transaction.Enlist(generatedCollection);
+                                generatedCollection.Save();
+
+                                // insert the generated comment and override collection to DB
+                                foreach (var generatedForecast in generatedCollection.Where(forecast => (bool)(forecast.HasComment || forecast.HasOverride)))
+                                {
+                                    generatedForecast.ForecastCommentAndOverrideCollection.MarkNew();
+                                    transaction.Enlist(generatedForecast.ForecastCommentAndOverrideCollection);
+                                    generatedForecast.ForecastCommentAndOverrideCollection.Save();
+                                }
+
+                                transaction.Commit();
+                            }
+                            break;
+                    }
+                }
+                lblForecastDescription.Text = string.Format("Company: {0} - Customer: {1} - Existing Forecast (POS/Actual Sale ends {2})", _company.CompanyCode, _customerKey.CustomerNumber, customer.POSSalesEndDate.Value.ToString("MM/dd/yyyy"));
+                Cursor = Cursors.Arrow;
+            }
+            catch (Exception ex)
+            {
+                Utility.GetInstance().HandleException(this, ex, e);
+            }
+            finally
+            {
+                // refresh the object and screen
+                customer.ForecastCollection = null;
+                bindingSourceForecast.DataSource = null;
+                bindingSourceForecast.DataSource = customer.ForecastCollection;
+
+                // refresh saved forecast dropdown
+                bindingSourceSavedForecast.DataSource = PWC.PersistenceLayer.Utility.GetInstance().GetSavedForecastDateCollection(_customerKey.CompanyCode.Value, _customerKey.CustomerNumber.Value, 12);
+
+                // sync the grid with business object collection
+                if (tabPWCForecast.SelectedTab != null)
+                    LoadTab(tabPWCForecast.SelectedTab.Name);
+            }
+        }
+
         private void btnImportForecast_Click(object sender, EventArgs e)
         {
             try
@@ -1366,102 +1477,6 @@ namespace PWC.Forecast
             catch (Exception ex)
             {
                 Utility.GetInstance().HandleException(this, ex, e);
-            }
-        }
-
-        private void btnSaveForecast_Click(object sender, EventArgs e)
-        {
-            Customer customer = null;
-            try
-            {
-                if (_company == null || _customerKey == null)
-                {
-                    MessageBox.Show("Please enter Company Code and Customer Number.", "Bassett Forecast");
-                    txtCompanyCode.Focus();
-                    return;
-                }
-                customer = _company.CustomerCollection[_customerKey];
-                if (customer.ForecastCollection.Count <= 0)
-                {
-                    MessageBox.Show("The Forecast collection is empty.", "Bassett Forecast");
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Utility.GetInstance().HandleException(this, ex, e);
-                return;
-            }
-                
-            try
-            {
-                Cursor = Cursors.WaitCursor;
-                using (var transaction = new Transaction())
-                {
-                    switch (customer.ForecastAction)
-                    {
-                        case ForecastAction.Get:
-                            transaction.Enlist(customer.ForecastCollection);
-                            customer.ForecastCollection.Save();
-
-                            transaction.Commit();
-                            break;
-                        case ForecastAction.Generate:
-                            {
-                                // save a copy of the genenerated collection
-                                var generatedCollection = customer.ForecastCollection;
-
-                                // delete the existing collections
-                                customer.ForecastAction = ForecastAction.Get; // do a get for delete
-                                customer.ForecastCollection.SetHeader = generatedCollection.SetHeader; // restore the version before the get
-
-                                foreach (var forecast in customer.ForecastCollection.Where(forecast => (bool)(forecast.HasComment || forecast.HasOverride)))
-                                {
-                                    transaction.Enlist(forecast.ForecastCommentAndOverrideCollection);
-                                    forecast.ForecastCommentAndOverrideCollection.Delete();
-                                }
-
-                                transaction.Enlist(customer.ForecastCollection);
-                                customer.ForecastCollection.Delete();
-
-                                // insert the generated collection to DB
-                                generatedCollection.MarkNew();
-                                transaction.Enlist(generatedCollection);
-                                generatedCollection.Save();
-
-                                // insert the generated comment and override collection to DB
-                                foreach (var generatedForecast in generatedCollection.Where(forecast => (bool) (forecast.HasComment || forecast.HasOverride)))
-                                {
-                                    generatedForecast.ForecastCommentAndOverrideCollection.MarkNew();
-                                    transaction.Enlist(generatedForecast.ForecastCommentAndOverrideCollection);
-                                    generatedForecast.ForecastCommentAndOverrideCollection.Save();
-                                }
-
-                                transaction.Commit();
-                            }
-                            break;
-                    }
-                }
-                lblForecastDescription.Text = string.Format("Company: {0} - Customer: {1} - Existing Forecast (POS/Actual Sale ends {2})", _company.CompanyCode, _customerKey.CustomerNumber, customer.POSSalesEndDate.Value.ToString("MM/dd/yyyy"));
-                Cursor = Cursors.Arrow;
-            }
-            catch (Exception ex)
-            {
-                Utility.GetInstance().HandleException(this, ex, e);
-            }
-            finally
-            {
-                // refresh the object and screen
-                customer.ForecastCollection = null;
-                bindingSourceForecast.DataSource = null;
-                bindingSourceForecast.DataSource = customer.ForecastCollection;
-
-                // refresh saved forecast dropdown
-                bindingSourceSavedForecast.DataSource = PWC.PersistenceLayer.Utility.GetInstance().GetSavedForecastDateCollection(_customerKey.CompanyCode.Value, _customerKey.CustomerNumber.Value, 12);
-
-                // sync the grid with business object collection
-                if (tabPWCForecast.SelectedTab != null)
-                    LoadTab(tabPWCForecast.SelectedTab.Name);
             }
         }
 
