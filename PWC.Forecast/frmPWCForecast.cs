@@ -942,7 +942,7 @@ namespace PWC.Forecast
                 var rx = new System.Text.RegularExpressions.Regex(@"^\d{2}-\d{5}-[A-Z0-9]{2}\d$");
                 if (!rx.IsMatch(txtGotoItem.Text))
                 {
-                    MessageBox.Show("Please enter Item Number in ##-#####-AAA", "Bassett Forecast");
+                    MessageBox.Show("Please enter Item Number in ##-#####-AA#", "Bassett Forecast");
                     e.Cancel = true;
                 }
             }
@@ -4700,10 +4700,10 @@ namespace PWC.Forecast
                 if (columnName == "ItemNumberForecast")
                 {
 #if TEMPFORECASTITEM
-                    rx = new System.Text.RegularExpressions.Regex(@"^\d{2}-\d{5}-[A-Z0-9]{2}$");
+                    rx = new System.Text.RegularExpressions.Regex(@"^\d{2}-\d{5}-[A-Z0-9]{2}$|^\d{7}$");
                     if (!rx.IsMatch(formattedValue))
                     {
-                        row.ErrorText = "Please enter Item Number in ##-#####-AA";
+                        row.ErrorText = "Please enter Item Number in ##-#####-AA or #######";
                         e.Cancel = true;
                         return;
                     }
@@ -4715,10 +4715,10 @@ namespace PWC.Forecast
                         e.Cancel = true;
                     }
 #else
-                    rx = new System.Text.RegularExpressions.Regex(@"^\d{2}-\d{5}-[A-Z0-9]{2}\d$");
+                    rx = new System.Text.RegularExpressions.Regex(@"^\d{2}-\d{5}-[A-Z0-9]{2}\d$|^\d{7}$");
                     if (!rx.IsMatch(formattedValue))
                     {
-                        row.ErrorText = "Please enter Item Number in ##-#####-AAA";
+                        row.ErrorText = "Please enter Item Number in ##-#####-AA# or #######";
                         e.Cancel = true;
                         return;
                     }
